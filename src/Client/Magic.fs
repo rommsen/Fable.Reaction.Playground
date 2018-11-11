@@ -236,19 +236,21 @@ let query (model : Model) msgs =
    | Remote _ ->
       let stringQuery =
         msgs
-        |> AsyncRx.choose (function | LetterStringChanged str -> Some str | _ -> Option.None)
+        |> AsyncRx.choose (function | LetterStringChanged str -> printfn "stringQuery"; Some str | _ -> Option.None)
 
       let letterStringQuery =
         stringQuery
         |> AsyncRx.map Shared.Msg.LetterStringChanged
+        |> AsyncRx.map (fun x -> printfn "stringQuery %A" x ; x)
 
       let xs =
         stringQuery
         |> AsyncRx.startWith [model.LetterString]
         |> AsyncRx.flatMapLatest (fun letters ->
-            letterStream letters)
-        |> AsyncRx.map Shared.Msg.Letter
-        |> AsyncRx.merge letterStringQuery
+            letterStream letters
+            |> AsyncRx.map Shared.Msg.Letter
+            |> AsyncRx.merge letterStringQuery)
+        // |> AsyncRx.merge letterStringQuery
         |> server
         |> AsyncRx.map RemoteMsg
 

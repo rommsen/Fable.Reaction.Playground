@@ -18,6 +18,7 @@ open Shared
 open Giraffe.Serialization
 
 let publicPath = Path.GetFullPath "../Client/public"
+// let publicPath = Path.GetFullPath "C:\src\FableReactionPlayground\src\Client\public"
 let port = 8085us
 
 
@@ -61,13 +62,13 @@ let webApp =
 let query (connectionId: ConnectionId) (msgs: IAsyncObservable<Msg*ConnectionId>) : IAsyncObservable<Msg*ConnectionId> =
   msgs
   |> AsyncRx.flatMap(fun (msg,id) ->
-       match msg with
+      match msg with
        | Msg.LetterStringChanged letterString ->
           mailbox.Post (Set letterString)
 
-       | _ -> ()
+      | _ -> ()
 
-       AsyncRx.single (msg,id))
+      AsyncRx.single (msg,id))
 
 
 let configureApp (app : IApplicationBuilder) =
